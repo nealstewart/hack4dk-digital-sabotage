@@ -131,17 +131,17 @@ class Camera extends PureComponent<{}, State> {
                 />
                 <div className="bottom">
                     {requestState === CameraTakingState.success && [
-                        <Link key="back" className="left" to="/">Back</Link>,
-                        <button key="takePicture" onClick={onPictureTake}>
+                        <Link key="back" className="left button" to="/">Back</Link>,
+                        <button key="takePicture" onClick={onPictureTake} className="button">
                             Take picture
                         </button>
                     ]}
                     {requestState === CameraTakingState.pictureTaken &&
                         [
-                            <button key="retake" className="left" onClick={onRetake}>
+                            <button key="retake" className="button" onClick={onRetake}>
                                 Retake
                             </button>,
-                            <button key="finish" className="right" onClick={onRetake}>
+                            <button key="finish" className="button" onClick={onRetake}>
                                 Finish
                             </button>
                         ]}

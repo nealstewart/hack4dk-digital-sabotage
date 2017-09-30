@@ -6,38 +6,38 @@
 .bottom {
     height: 40px;
     position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10% 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: black;
-    padding: 10px;
+    background-color: #304352;
+    padding: 20px;
 }
 
+/*button*/
 .bottom a, .bottom button {
     border: none;
     font-size: 10px;
-    display: block;
+    display: flex;/*block before*/
+    align-items:center;
+    justify-content: space-between;
     margin: auto;
     text-align: center;
-    width: 100px;
+    width: auto;
     border-radius: 18px;
     background-color: white;
-    padding: 10px;
+    padding: 10px 20px;
     text-decoration: none;
     color: black;
-}
-
-.bottom .left, .bottom .right {
-    display: block;
-    position: absolute;
+    align-self: center;
+    font-size: 12px;
 }
 
 .bottom .left {
-    width: 100px;
-    left: 0;
 }
 
 .bottom .right {
-    width: 100px;
-    right: 0;
 }
