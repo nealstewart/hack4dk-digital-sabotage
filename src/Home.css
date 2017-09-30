@@ -3,7 +3,7 @@
     position: relative;
 }
 
-.bottom {
+.my-bottom {
     height: 40px;
     position: fixed;
     display: flex;

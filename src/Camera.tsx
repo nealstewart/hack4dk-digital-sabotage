@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PureComponent, SFC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import './Camera.css';
 
 enum CameraTakingState {
@@ -47,10 +47,15 @@ const ActualCamera: SFC<ActualCameraProps> = ({onVideoRef, requestState, picture
     }
 };
 
-class Camera extends PureComponent<{}, State> {
+interface Props {
+    history: any;
+    onImage(imageData: string): void;
+}
+
+const Camera = withRouter(class extends PureComponent<Props, State> {
     videoEl?: HTMLVideoElement;
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
@@ -95,19 +100,7 @@ class Camera extends PureComponent<{}, State> {
                 return;
             }
             this.videoEl.pause();
-            const {videoWidth: width, videoHeight: height} = this.videoEl;
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const context = canvas.getContext('2d');
-            if (!context) {
-                throw new Error('fuck');
-            }
-            context.drawImage(this.videoEl, 0, 0, width, height);
-
-            const data = canvas.toDataURL('image/png');
             this.setState({
-                pictureData: data,
                 requestState: CameraTakingState.pictureTaken
             });
         };
@@ -122,6 +115,23 @@ class Camera extends PureComponent<{}, State> {
             });
         };
 
+        const onFinish = () => {
+            if (!this.videoEl) {
+                throw new Error('What how?');
+            }
+            const {videoWidth: width, videoHeight: height} = this.videoEl;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const context = canvas.getContext('2d')!;
+            context.drawImage(this.videoEl, 0, 0, width, height);
+
+            const data = canvas.toDataURL('image/png');
+
+            this.props.onImage(data);
+            this.props.history.push('/art');
+        };
+
         return (
             <div className="Camera">
                 <ActualCamera
@@ -129,7 +139,7 @@ class Camera extends PureComponent<{}, State> {
                     onVideoRef={onVideoRef}
                     pictureData={pictureData}
                 />
-                <div className="bottom">
+                <div className="my-bottom">
                     {requestState === CameraTakingState.success && [
                         <Link key="back" className="left button" to="/">Back</Link>,
                         <button key="takePicture" onClick={onPictureTake} className="button">
@@ -141,7 +151,7 @@ class Camera extends PureComponent<{}, State> {
                             <button key="retake" className="button" onClick={onRetake}>
                                 Retake
                             </button>,
-                            <button key="finish" className="button" onClick={onRetake}>
+                            <button key="finish" className="button" onClick={onFinish}>
                                 Finish
                             </button>
                         ]}
@@ -149,6 +159,6 @@ class Camera extends PureComponent<{}, State> {
             </div>
         );
     }
-}
+});
 
 export default Camera;
