@@ -1,0 +1,25 @@
+.Home {
+    flex: 1;
+    position: relative;
+}
+
+.Home .bottom {
+    height: 40px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: black;
+    text-align: center;
+    vertical-align: middle;
+    padding: 10px;
+}
+
+.Home .bottom a {
+    display: inline-block;
+    border-radius: 18px;
+    background-color: white;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
