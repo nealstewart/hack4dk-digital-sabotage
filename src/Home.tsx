@@ -7,7 +7,7 @@ const logo = require('./icon_camera.svg');
 
 const Home: SFC = () => (
     <div className="Home">
-        <div className="bottom">
+        <div className="my-bottom">
             <Link to="/camera" className="add-entry">
                 <img src={logo} className="icon"/>
                 <span className="link-text">Add entry</span>

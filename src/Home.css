@@ -18,7 +18,7 @@
 }
 
 /*button*/
-.bottom a, .bottom button {
+.my-bottom a, .my-bottom button {
     border: none;
     font-size: 10px;
     display: flex;/*block before*/
@@ -36,8 +36,8 @@
     font-size: 12px;
 }
 
-.bottom .left {
+.my-bottom .left {
 }
 
-.bottom .right {
+.my-bottom .right {
 }
