@@ -3,23 +3,41 @@
     position: relative;
 }
 
-.Home .bottom {
+.bottom {
     height: 40px;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background-color: black;
-    text-align: center;
-    vertical-align: middle;
     padding: 10px;
 }
 
-.Home .bottom a {
-    display: inline-block;
+.bottom a, .bottom button {
+    border: none;
+    font-size: 10px;
+    display: block;
+    margin: auto;
+    text-align: center;
+    width: 100px;
     border-radius: 18px;
     background-color: white;
     padding: 10px;
     text-decoration: none;
     color: black;
+}
+
+.bottom .left, .bottom .right {
+    display: block;
+    position: absolute;
+}
+
+.bottom .left {
+    width: 100px;
+    left: 0;
+}
+
+.bottom .right {
+    width: 100px;
+    right: 0;
 }

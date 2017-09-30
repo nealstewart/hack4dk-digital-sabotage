@@ -6,4 +6,9 @@
 
 .Camera video {
     flex: 1;
+    object-fit: cover;
+}
+
+.Camera img {
+    flex: 1;
 }

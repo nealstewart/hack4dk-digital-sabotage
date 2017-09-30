@@ -1,37 +1,42 @@
 import * as React from 'react';
 import { PureComponent, SFC } from 'react';
+import { Link } from 'react-router-dom';
 import './Camera.css';
 
-enum RequestState {
+enum CameraTakingState {
     requesting,
     failed,
-    success
+    success,
+    pictureTaken
 }
 
 interface State {
-    mediaStream?: MediaStream;
-    requestState: RequestState;
     setVideo: boolean;
+    requestState: CameraTakingState;
+    mediaStream?: MediaStream;
+    pictureData?: string;
 }
 
 interface ActualCameraProps {
-    requestState: RequestState;
+    requestState: CameraTakingState;
+    pictureData?: string;
     onVideoRef(onVideoRef: HTMLVideoElement | null): void;
 }
 
-const ActualCamera: SFC<ActualCameraProps> = ({onVideoRef, requestState}) => {
+const ActualCamera: SFC<ActualCameraProps> = ({onVideoRef, requestState, pictureData}) => {
     switch (requestState) {
-        case RequestState.requesting: {
+        case CameraTakingState.requesting: {
             return (
                 <div>...</div>
             );
         }
-        case RequestState.success: {
+        case CameraTakingState.pictureTaken:
+        case CameraTakingState.success: {
             return (
                 <video ref={onVideoRef} />
             );
         }
-        case RequestState.failed: {
+        case CameraTakingState.failed: {
             return (
                 <div>:(</div>
             );
@@ -40,14 +45,16 @@ const ActualCamera: SFC<ActualCameraProps> = ({onVideoRef, requestState}) => {
             return <div>impossible</div>;
         }
     }
-}
+};
 
 class Camera extends PureComponent<{}, State> {
+    videoEl?: HTMLVideoElement;
+
     constructor(props: {}) {
         super(props);
 
         this.state = {
-            requestState: RequestState.requesting,
+            requestState: CameraTakingState.requesting,
             setVideo: false
         };
     }
@@ -57,33 +64,88 @@ class Camera extends PureComponent<{}, State> {
             .then(stream => {
                 this.setState({
                     mediaStream: stream,
-                    requestState: RequestState.success
+                    requestState: CameraTakingState.success
                 });
             })
             .catch(nope => (
                 this.setState({
-                    requestState: RequestState.failed
+                    requestState: CameraTakingState.failed
                 })
             ));
     }
 
     render() {
-        const {requestState, mediaStream, setVideo} = this.state;
+        const {requestState, mediaStream, setVideo, pictureData} = this.state;
 
         const onVideoRef = (videoEl: HTMLVideoElement) => {
             if (!videoEl || !mediaStream || setVideo) {
                 return;
             }
+            this.videoEl = videoEl;
             this.setState({
                 setVideo: true
             });
             videoEl.srcObject = mediaStream;
             videoEl.play();
+            videoEl.volume = 0;
+        };
+
+        const onPictureTake = () => {
+            if (!this.videoEl) {
+                return;
+            }
+            this.videoEl.pause();
+            const {videoWidth: width, videoHeight: height} = this.videoEl;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const context = canvas.getContext('2d');
+            if (!context) {
+                throw new Error('fuck');
+            }
+            context.drawImage(this.videoEl, 0, 0, width, height);
+
+            const data = canvas.toDataURL('image/png');
+            this.setState({
+                pictureData: data,
+                requestState: CameraTakingState.pictureTaken
+            });
+        };
+
+        const onRetake = () => {
+            if (!this.videoEl) {
+                return;
+            }
+            this.videoEl.play();
+            this.setState({
+                requestState: CameraTakingState.success
+            });
         };
 
         return (
             <div className="Camera">
-                <ActualCamera requestState={requestState} onVideoRef={onVideoRef} />
+                <ActualCamera
+                    requestState={requestState}
+                    onVideoRef={onVideoRef}
+                    pictureData={pictureData}
+                />
+                <div className="bottom">
+                    {requestState === CameraTakingState.success && [
+                        <Link key="back" className="left" to="/">Back</Link>,
+                        <button key="takePicture" onClick={onPictureTake}>
+                            Take picture
+                        </button>
+                    ]}
+                    {requestState === CameraTakingState.pictureTaken &&
+                        [
+                            <button key="retake" className="left" onClick={onRetake}>
+                                Retake
+                            </button>,
+                            <button key="finish" className="right" onClick={onRetake}>
+                                Finish
+                            </button>
+                        ]}
+                </div>
             </div>
         );
     }
