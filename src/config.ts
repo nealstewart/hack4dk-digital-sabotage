@@ -4,5 +4,8 @@ export default {
     port: 5000,
     getUrl() {
         return this.protocol + '://' + this.url + ':' + this.port;
+    },
+    appendPath(a: string) {
+        return this.getUrl() + '/' + a;
     }
 };

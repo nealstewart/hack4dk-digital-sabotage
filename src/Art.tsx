@@ -3,6 +3,7 @@ import { PureComponent } from 'react';
 import config from './config';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
+import { Link } from 'react-router-dom';
 
 interface Props {
     imageData: string;
@@ -11,6 +12,7 @@ interface Props {
 interface State {
     loadingState: LoadingState;
     images?: string[];
+    selected: number;
 }
 
 enum LoadingState {
@@ -23,7 +25,8 @@ export default class Art extends PureComponent<Props, State> {
     constructor() {
         super();
         this.state = {
-            loadingState: LoadingState.LOADING
+            loadingState: LoadingState.LOADING,
+            selected: 0
         };
     }
 
@@ -40,7 +43,14 @@ export default class Art extends PureComponent<Props, State> {
     render() {
         switch (this.state.loadingState) {
             case LoadingState.LOADING:
-                return <div>Loading...</div>;
+                return (
+                    <div>
+                        <div>Loading...</div>
+                        <div className="my-bottom">
+                            <Link to="/camera">Back</Link>
+                        </div>
+                    </div>
+                );
             case LoadingState.FAILURE:
                 return <div>:(</div>;
             case LoadingState.SUCCESS:
@@ -48,13 +58,38 @@ export default class Art extends PureComponent<Props, State> {
                 if (!images) {
                     throw new Error('how?');
                 }
-                const items = images.map(i => {
-                    return {
-                        original: i,
-                        thumbnail: i
-                    };
-                });
-                return <ImageGallery items={items} slideInterval={1000} />;
+                const items = images.map(i => ({
+                        original: config.appendPath(i),
+                        thumbnail: config.appendPath(i)
+                }));
+
+                const {imageData} = this.props;
+
+                const onSelect = () => {
+                    const imageUrl = this.state.images![this.state.selected];
+                    fetch(config.appendPath('graffiti') + '?art=' + encodeURIComponent(imageUrl) + '&location=12,55', {
+                        method: 'POST',
+                        headers: {},
+                        body: imageData
+                    }).then(a => console.log(a));
+                };
+
+                return (
+                    <div>
+                        <ImageGallery
+                            onSlide={(i: number) => this.setState({selected: i})}
+                            items={items}
+                            slideInterval={1000}
+                            showThumbnails={false}
+                            showFullscreenButton={false}
+                            showPlayButton={false}
+                        />
+                        <div className="my-bottom">
+                            <Link to="/camera">Back</Link>
+                            <button onClick={onSelect}>Select</button>
+                        </div>
+                    </div>
+                );
             default:
                 return <div>Blah</div>;
         }
