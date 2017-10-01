@@ -32,5 +32,13 @@ body {
 }
 
 .link-text {
-    margin: 0px;
+    margin-left: 20px;
+}
+
+.buttom-center {
+    justify-content: center;
+}
+
+.buttom-space-between {
+    justify-content: space-between;
 }

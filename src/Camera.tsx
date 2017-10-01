@@ -3,6 +3,9 @@ import { PureComponent, SFC } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import './Camera.css';
 
+const backIcon = require('./back.svg');
+const acceptIcon = require('./accept.svg');
+
 enum CameraTakingState {
     requesting,
     failed,
@@ -139,20 +142,22 @@ const Camera = withRouter(class extends PureComponent<Props, State> {
                     onVideoRef={onVideoRef}
                     pictureData={pictureData}
                 />
-                <div className="my-bottom">
+                <div className="my-bottom buttom-space-between">
                     {requestState === CameraTakingState.success && [
-                        <Link key="back" className="left button" to="/">Back</Link>,
+                        <Link key="back" className="back" to="/">
+                            <img src={backIcon} className="back_icon"/>
+                        </Link>,
                         <button key="takePicture" onClick={onPictureTake} className="button">
                             Take picture
                         </button>
                     ]}
                     {requestState === CameraTakingState.pictureTaken &&
                         [
-                            <button key="retake" className="button" onClick={onRetake}>
-                                Retake
+                            <button key="retake" className = "back" onClick={onRetake}>
+                                <img src={backIcon} className="back_icon"/>
                             </button>,
-                            <button key="finish" className="button" onClick={onFinish}>
-                                Finish
+                            <button key="finish" className="back" onClick={onFinish}>
+                                <img src={acceptIcon} className="back_icon"/>
                             </button>
                         ]}
                 </div>

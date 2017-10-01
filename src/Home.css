@@ -1,6 +1,75 @@
+/* top (peter) */
+.top {
+    height: 70px;
+    padding: 0 10%;
+    display: flex;
+    align-items:center;
+    text-align: center;
+    justify-content: center;
+}
+
+.top img {
+    height: 60px;
+    position: fixed;
+    z-index: 1;
+}
+
+.card-container {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    z-index: 2;
+    position:relative;
+}
+
+.card {
+    height: 280px;
+    background-color: white;
+    margin: 0 5%;
+    margin-bottom: 5%;
+    display: flex;
+    flex-direction: column;
+}
+
+.img-container {
+    flex: 5;
+    background-color: grey;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-size:cover
+}
+
+.img-1 {
+    background-image: url("https://uploads2.wikiart.org/images/rembrandt/portrait-of-an-old-man.jpg");
+}
+
+.img-2 {
+    background-image: url("https://i.pinimg.com/736x/73/75/b8/7375b8d715843c344b1e1214c761f9ba--albrecht-durer-watercolor-artists.jpg");
+}
+
+.img-3 {
+    background-image: url("http://www.freakingnews.com/pictures/84000/Elizabeth-Taylor-Old-Portrait-Painting--84347.jpg");
+}
+
+.img-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: white;
+    flex-direction: row;
+}
+
+.img-info img {
+    height: 14px;
+    margin-right: 15px;
+    padding: 0 20px;
+}
+
 .Home {
     flex: 1;
     position: relative;
+    background: linear-gradient(#fbc8d4, #9795f0);    
 }
 
 .my-bottom {
@@ -8,23 +77,23 @@
     position: fixed;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 10% 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #304352;
-    padding: 20px;
+    background-color: #9795f0;
+    padding: 0 10%;
+    height: 80px;
+    z-index: 3;
 }
 
 /*button*/
-.my-bottom a, .my-bottom button {
+.button {
     border: none;
     font-size: 10px;
     display: flex;/*block before*/
     align-items:center;
     justify-content: space-between;
-    margin: auto;
+    /*margin: auto;*/
     text-align: center;
     width: auto;
     border-radius: 18px;
@@ -35,9 +104,26 @@
     align-self: center;
     font-size: 12px;
 }
-
-.my-bottom .left {
+.back {
+    background-color: white;
+    align-items:center;
+    display: flex;/*block before*/
+    justify-content: center;
+    border-radius: 100px;
 }
 
-.my-bottom .right {
+.back_icon {
+    height: 35px;
+    width: 35px;
+}
+
+/*resets the default styling of the button*/
+button {
+    background-color: buttonface;
+    box-sizing: border-box;
+    padding: 0;
+    border-width: 0px;
+    border-style: outset;
+    border-color: buttonface;
+    border-image: initial;
 }
