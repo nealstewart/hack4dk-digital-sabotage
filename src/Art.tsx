@@ -6,7 +6,7 @@ import 'react-image-gallery/styles/css/image-gallery.css';
 import { Link } from 'react-router-dom';
 
 interface Props {
-    imageData: string;
+    imageData: string[];
 }
 
 interface State {
@@ -67,10 +67,14 @@ export default class Art extends PureComponent<Props, State> {
 
                 const onSelect = () => {
                     const imageUrl = this.state.images![this.state.selected];
+
+                    const formData = new FormData();
+
+                    imageData.forEach((s, i) => formData.append(i.toString(), s));
+
                     fetch(config.appendPath('graffiti') + '?art=' + encodeURIComponent(imageUrl) + '&location=12,55', {
                         method: 'POST',
-                        headers: {},
-                        body: imageData
+                        body: formData
                     }).then(a => console.log(a));
                 };
 

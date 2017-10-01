@@ -6,7 +6,7 @@ import Art from './Art';
 import './App.css';
 
 interface State {
-  imageData?: string;
+  imageData?: string[];
 }
 
 class App extends React.Component<{}, State> {
@@ -19,7 +19,7 @@ class App extends React.Component<{}, State> {
 
   render() {
     const {imageData} = this.state;
-    const onImage = (data: string) => this.setState({imageData: data});
+    const onImage = (data: string[]) => this.setState({imageData: data});
     return (
       <BrowserRouter>
         <div className="App">

@@ -14,14 +14,25 @@ interface State {
     setVideo: boolean;
     requestState: CameraTakingState;
     mediaStream?: MediaStream;
-    pictureData?: string;
+    pictureData?: string[];
 }
 
 interface ActualCameraProps {
     requestState: CameraTakingState;
-    pictureData?: string;
+    pictureData?: string[];
     onVideoRef(onVideoRef: HTMLVideoElement | null): void;
 }
+
+const captureImage = (videoEl: HTMLVideoElement) => {
+    const {videoWidth: width, videoHeight: height} = videoEl;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d')!;
+    context.drawImage(videoEl, 0, 0, width, height);
+
+    return canvas.toDataURL('image/png');
+};
 
 const ActualCamera: SFC<ActualCameraProps> = ({onVideoRef, requestState, pictureData}) => {
     switch (requestState) {
@@ -47,13 +58,18 @@ const ActualCamera: SFC<ActualCameraProps> = ({onVideoRef, requestState, picture
     }
 };
 
+const EXPOSURE_LENGTH = 5000;
+const EXPOSURE_RATE = EXPOSURE_LENGTH / 10;
+
 interface Props {
     history: any;
-    onImage(imageData: string): void;
+    onImage(imageData: string[]): void;
 }
 
 const Camera = withRouter(class extends PureComponent<Props, State> {
     videoEl?: HTMLVideoElement;
+    intervalId: any;
+    initialTime: number;
 
     constructor(props: Props) {
         super(props);
@@ -62,14 +78,41 @@ const Camera = withRouter(class extends PureComponent<Props, State> {
             requestState: CameraTakingState.requesting,
             setVideo: false
         };
+
+        this.intervalId = 0;
+        this.initialTime = 0;
+    }
+
+    startInterval() {
+        this.setState({pictureData: []});
+        this.initialTime = Date.now();
+        const onInterval = () => {
+            this.state.pictureData!.push(captureImage(this.videoEl!));
+            if ((Date.now() - this.initialTime) > EXPOSURE_LENGTH) {
+                this.stopRecording();
+                return;
+            }
+        };
+
+        this.intervalId = setInterval(onInterval, EXPOSURE_RATE);
+    }
+
+    stopRecording() {
+        this.videoEl!.pause();
+        clearInterval(this.intervalId);
+        this.setState({
+            requestState: CameraTakingState.pictureTaken
+        });
     }
 
     componentWillMount() {
         navigator.mediaDevices.getUserMedia({audio: true, video: {facingMode: 'user'}})
             .then(stream => {
+                this.startInterval();
                 this.setState({
                     mediaStream: stream,
-                    requestState: CameraTakingState.success
+                    requestState: CameraTakingState.success,
+                    pictureData: []
                 });
             })
             .catch(nope => (
@@ -99,10 +142,7 @@ const Camera = withRouter(class extends PureComponent<Props, State> {
             if (!this.videoEl) {
                 return;
             }
-            this.videoEl.pause();
-            this.setState({
-                requestState: CameraTakingState.pictureTaken
-            });
+            this.stopRecording();
         };
 
         const onRetake = () => {
@@ -110,25 +150,16 @@ const Camera = withRouter(class extends PureComponent<Props, State> {
                 return;
             }
             this.videoEl.play();
-            this.setState({
-                requestState: CameraTakingState.success
-            });
+            this.setState({requestState: CameraTakingState.success});
+            this.startInterval();
         };
 
         const onFinish = () => {
             if (!this.videoEl) {
                 throw new Error('What how?');
             }
-            const {videoWidth: width, videoHeight: height} = this.videoEl;
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const context = canvas.getContext('2d')!;
-            context.drawImage(this.videoEl, 0, 0, width, height);
 
-            const data = canvas.toDataURL('image/png');
-
-            this.props.onImage(data);
+            this.props.onImage(this.state.pictureData!);
             this.props.history.push('/art');
         };
 
